@@ -1,0 +1,9 @@
+theme: jekyll-theme-cayman
+collections:
+  ilos:
+    output: true
+title: "Blog"
+description: Some description
+student:
+  name: Loek van der Beele
+  number: ""
