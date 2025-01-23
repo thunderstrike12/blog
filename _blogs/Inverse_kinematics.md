@@ -42,7 +42,7 @@ Before we get into the actual Inverse Kinematics we will first take a look at so
 
 ```
 
-Before I do that, I also do a check to see if the angle is greater than the maximum angle the segment can go. To do this, I get the current angle between two quaternions. If the angle has passed the maximum, I check if the new angle angle is smaller than both the maximum angle and the old rotation, otherwise I clamp the new rotation to the maximum angle. This is to make sure that the arm does not get stuck past the max angle because it isn't allowed to move anymore. Below you can see what that looks like in code:
+Before I do that, I also do a check to see if the angle is greater than the maximum angle the segment can go. To do this, I get the current angle between two quaternions. If the angle has passed the maximum, I check if the new angle is smaller than both the maximum angle and the old rotation, otherwise I clamp the new rotation to the maximum angle. This is to make sure that the arm does not get stuck past the max angle because it isn't allowed to move anymore. Below you can see what that looks like in code:
 
 ``` cpp
 
@@ -69,6 +69,8 @@ And a GIF  of forward kinematics in action:
 ![visual](../assets/media/visual.png)
 
 <small>Note: this is which segment I mean with next or previous in the code. This is both in the forward and backwards reaching parts to avoid confusion while working on the algorithm.</small>
+
+To control where the arm starts we have a base, and the location the arm should try to reach is the (end)effector. Below I'll explain how they together guide the arm to it's position.
 
 For the FABRIK algorithm, there are two main parts; the forward reaching and backwards reaching part. In the forward reaching part I set each segments position equal to the previous segments end position, and I point the segment to the base of the next segment.
 
@@ -376,3 +378,35 @@ If a bone doesn't have a parent we can just stick it to the base.
     }
 }
 ```
+
+Now that we can load rigs from blender, all we have to do is write some code to control the effectors and the base of the rig, and we have a walking animation!
+
+```cpp
+//for every end point
+for (int i = 0; i < 5; i++) {
+	end[i].t += dt;
+	
+	if (end[i].t > 0.7f && state == MOVING || end[i].t > 0.7f && state == ROTATING && i <= 1) {
+		end[i].t -= 0.7f;
+
+		glm::vec3 dir = *base + end[i].relative_to_body - *end[i].eff;
+		float length = glm::length(dir);
+		dir = glm::normalize(dir);
+		*end[i].eff = *base + end[i].relative_to_body;
+		*end[i].eff += dir * 1.2f;
+	}
+
+	if (state == STATIONARY) {
+		*end[i].eff = *base + end[i].relative_to_body;
+	}
+
+	Engine.DebugRenderer().AddCircle(bee::DebugCategory::Gameplay, arm.effector, 0.2f, { 0, 0, 1, 1 });
+	Engine.DebugRenderer().AddCircle(bee::DebugCategory::Gameplay, arm.effector_target + 0.01f * i, 0.1f, { 0, 0, 1, 1 });
+}
+*end[HEAD].eff = *base + end[HEAD].relative_to_body;
+*end[HEAD].eff += facing_dir * 0.3f;
+```
+
+And that will look something like this;
+
+![walk](../assets/media/human_walk.gif)
