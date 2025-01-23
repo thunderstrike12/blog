@@ -21,7 +21,7 @@
       <a href="/" class="btn"> 🏠 </a>
 
       {% for ilo in site.ilos %}
-        <a href="{{ ilo.url }}" class="btn"> {{ ilo.preview_title }}</a>
+        <a href="blog{{ ilo.url }}" class="btn"> {{ ilo.preview_title }}</a>
       {% endfor %}
     </header>
 
