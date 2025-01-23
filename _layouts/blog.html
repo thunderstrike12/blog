@@ -43,17 +43,36 @@
     <!-- with help of Claude.ai -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-          const header = document.querySelector('header');
-          let isStuck = false;
-        
-          window.addEventListener('scroll', () => {
-             if (isStuck) {
-              header.style.position = 'sticky';
-              header.style.top = '-50px';
-              isStuck = false;
+        const header = document.querySelector('header');
+        const peekHeight = 0;
+        let fullRevealThreshold = 100;
+        let isHeaderDown = false;
+
+        header.style.transition = 'transform 0.3s ease';
+        header.style.transform = `translateY(${peekHeight}px)`;
+
+        window.addEventListener('mousemove', (event) => {
+          const mouseY = event.clientY;
+          const scrollDistance = window.scrollY;
+
+          if (mouseY <= fullRevealThreshold && scrollDistance > 300) {
+            if(isHeaderDown){
+              fullRevealThreshold = 380;
             }
-          });
+            else{
+              fullRevealThreshold = 100;
+            }
+
+            if (!isHeaderDown) {
+              header.style.transform = 'translateY(300px)';
+              isHeaderDown = true;
+            }
+          } else {
+            header.style.transform = `translateY(${peekHeight}px)`;
+            isHeaderDown = false;
+          }
         });
+      });
     </script>
 
   </body>

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#FFA500">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="/assets/css/blog.css?v=9a9f6a842e5215dc1d9ae52a3e844a92cfb8e84c">
+    <link rel="stylesheet" href="/assets/css/blog.css?v=f5f00450166c856ddda767f349f9ac1ce69b2bf4">
     <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
 
 <!-- Setup Google Analytics -->
@@ -442,17 +442,36 @@
     <!-- with help of Claude.ai -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-          const header = document.querySelector('header');
-          let isStuck = false;
-        
-          window.addEventListener('scroll', () => {
-             if (isStuck) {
-              header.style.position = 'sticky';
-              header.style.top = '-50px';
-              isStuck = false;
+        const header = document.querySelector('header');
+        const peekHeight = 0;
+        let fullRevealThreshold = 100;
+        let isHeaderDown = false;
+
+        header.style.transition = 'transform 0.3s ease';
+        header.style.transform = `translateY(${peekHeight}px)`;
+
+        window.addEventListener('mousemove', (event) => {
+          const mouseY = event.clientY;
+          const scrollDistance = window.scrollY;
+
+          if (mouseY <= fullRevealThreshold && scrollDistance > 300) {
+            if(isHeaderDown){
+              fullRevealThreshold = 380;
             }
-          });
+            else{
+              fullRevealThreshold = 100;
+            }
+
+            if (!isHeaderDown) {
+              header.style.transform = 'translateY(300px)';
+              isHeaderDown = true;
+            }
+          } else {
+            header.style.transform = `translateY(${peekHeight}px)`;
+            isHeaderDown = false;
+          }
         });
+      });
     </script>
 
   </body>
