@@ -1,6 +1,6 @@
 theme: jekyll-theme-cayman
 collections:
-  ilos:
+  blogs:
     output: true
 title: "Blog"
 description: Some description

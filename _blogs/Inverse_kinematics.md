@@ -1,7 +1,9 @@
 ---
 title: "Inverse Kinematics"
 preview_title: "🤖 IK"
-layout: default
+layout: blog
+header_bg_color: "#23074d"
+header_bg_color_secondary: "#cc5333"
 ---
 
 ### Introduction
@@ -13,9 +15,7 @@ In this post about Inverse Kinematics I will demonstrate how I've made my Invers
 <br>
   <a href="#inverse-kinematics">inverse kinematics</a>  
 <br>
-  <a href="#loading-rigs-from-blender">loading rigs</a>  
-<br>
-  <a href="#usability-of-library">usability</a>
+  <a href="#loading-rigs-from-blender">loading rigs</a>
 </div>
 
 ### Forward kinematics
@@ -72,9 +72,7 @@ And a GIF  of forward kinematics in action:
 
 For the FABRIK algorithm, there are two main parts; the forward reaching and backwards reaching part. In the forward reaching part I set each segments position equal to the previous segments end position, and I point the segment to the base of the next segment.
 
-For the segment at the end of the arm, I set it's position equal to the effector instead.
-
-And for the segment connected to the base, I point it to the base instead.
+For the segment at the end of the arm, I set it's position equal to the effector instead. And for the segment connected to the base, I point it to the base instead.
 
 All this can be seen below. Note that this is a very simplified version of the actual code.
 
@@ -104,9 +102,7 @@ All this can be seen below. Note that this is a very simplified version of the a
 
 For the backwards part, I set the segment equal to end point of the next segment and point it to the base of the previous segment. Pretty similar to the previous loop, but an important difference here is that this loop increments i after each iteration, instead of decrementing, like in the previous loop.
 
-In this loop the segment at the end of the arm it points to the effector instead of the base of the previous segment.
-
-The position of the segment at the base of the arm is set equal to the base of the arm instead of the end point of the next segment.
+In this loop the segment at the end of the arm it points to the effector instead of the base of the previous segment. The position of the segment at the base of the arm is set equal to the base of the arm instead of the end point of the next segment.
 
 The code for the backwards part can be seen below.
 
@@ -165,11 +161,7 @@ This is what all that together can make;
 
 ### Loading rigs from Blender
 
-For the loading of the rigs from blender, I first read the file, and store all the bones in a vector with all the data I will need.
-
-I will assert if `bones` is empty, because this means the file that has been passed is invalid.
-
-The `pop_back()` at the end is because before going into the skins section there is an armature section, wich it will also store. We can just simply remove the last element to fix this, because every file has this.
+For the loading of the rigs from blender, I first read the file, and store all the bones in a vector with all the data I will need. To do this, I first check if I'm in a nodes section, and if I am, I can start looking for bones, until I leave the nodes section.
 
 This can be seen below;
 
@@ -181,22 +173,25 @@ Rig::Rig(std::string file_path)
     std::istringstream stream(data);
     std::string line;
 
-    bool inNodesSection = false;
-    glm::vec3 currentTranslation;
+    bool in_nodes_section = false;
+    glm::vec3 current_translation;
     int id_count = 0;
 
     while (std::getline(stream, line))
     {
         if (line.find("\"nodes\"") != std::string::npos)
         {
-            inNodesSection = true;
+            in_nodes_section = true;
         }
-        else if (inNodesSection)
+        else if (in_nodes_section)
         {
             if (line.find("skins") != std::string::npos)
             {
-                inNodesSection = false;
+                in_nodes_section = false;
             }
+```
+When we're in the nodes section, we can start looking for bones. When we find a bone, we add it to a vector and store it's useful data with it.
+```cpp
             if (line.find("{") != std::string::npos)
             {
                 bones.push_back({id_count});
@@ -204,9 +199,12 @@ Rig::Rig(std::string file_path)
             }
             if (line.find("\"name\":\"Bone") != std::string::npos)
             {
-                std::string name = removeNonNumbers(line);
+                std::string name = RemoveNonNumbers(line);
                 if(!name.empty()) bones.back().name = std::stoi(name);
             }
+```
+For the children we loop until we hit a closing bracket and then add the whole vector of children to the bone.
+```cpp
             if (line.find("children") != std::string::npos)
             {
                 std::string value;
@@ -227,6 +225,9 @@ Rig::Rig(std::string file_path)
                     }
                 }
             }
+```
+For the translation a similar thing, however, here we can stop when we have 3 values because that's all a 3D position will give us.
+```cpp
             if (line.find("\"translation\"") != std::string::npos)
             {
                 std::string value;
@@ -243,21 +244,30 @@ Rig::Rig(std::string file_path)
 
                     if (values.size() == 3)
                     {
-                        currentTranslation = glm::vec3(values[0], values[1], values[2]);
-                        bones.back().translation = currentTranslation;
+                        current_translation = glm::vec3(values[0], values[1], values[2]);
+                        bones.back().translation = current_translation;
                         break;
                     }
                 }
             }
         }
     }
+```
+lastly, I will assert if `bones` is empty, because this means the file that has been passed is invalid.
+
+The `pop_back()` at the end is because before going into the skins section there is an armature section, wich it will also store. We can just simply remove the last element to fix this, because every file has this.
+```cpp
     assert(!bones.empty() && "invalid file");
     bones.pop_back();
 ```
 
-![visual2](../assets/media/visual2.png)
+<div style="text-align: center;">
+  <img src="../assets/media/visual2.png" alt="visual2" width="180px" height="300px" />
+</div>
 
 Next I determine what the parent should be for every bone. In the same loop, I also create new arms if the arm splits up into 2 or more other arms. For this, I need to make a new arm entity, which can be seen above. Every arm that splits off into multiple arms is it's own arm, that in turn can have as many segments as needed. In the image above every color represents it's own arm, and in the code below I generate an arm eveytime there is a split.
+
+The reason there needs to be a split is because the algorithm is not made for seperate arms, and this allows for maximum control of the rig. We can now fully control where the head is for example. After the rig is loaded you will be able to access the end point of the arm that is the head and you can move it around and it will just work.
 
 ```cpp
     int arm_count = 0;
@@ -350,11 +360,14 @@ void RigManager::Update(float) {
                     auto trans = Engine.ECS().Registry.get<Transform>(arm_comp.segment[arm_comp.segment.size() - 2]);
                     auto seg = Engine.ECS().Registry.get<Segment>(arm_comp.segment[arm_comp.segment.size() - 2]);
                     glm::vec3 forward = glm::vec3(0, 0, 1);
-                    glm::vec3 pos = trans.GetTranslation() + glm::normalize(trans.GetRotation() * forward) * seg.length * 0.5f;
+                    glm::vec3 pos = trans.GetTranslation() + glm::normalize(trans.GetRotation() * forward) * seg.length;
 
                     arm_comp1.base = pos;
                 }
             }
+```
+If a bone doesn't have a parent we can just stick it to the base.
+```cpp
             if (rig.bones[i].parent == -1)
             {
                 Engine.ECS().Registry.get<ArmInverse>(rig.bones[i].arm_entity).base = rig.base;
@@ -363,33 +376,3 @@ void RigManager::Update(float) {
     }
 }
 ```
-
-### Usability of Library
-
-Rigs can be loaded from blender quite easily by making an entity and adding a rig component with a file path as argument like this:
-
-```cpp
-rig = Engine.ECS().CreateEntity();
-Engine.ECS().CreateComponent<Rig>(rig, "models/test.gltf");
-```
-
-The model will now bee in bee with a base and control points that can be adjusted in game code.
-
-Below can be seen what that could look like;
-
-![b2b](../assets/media/blentobee.png)
-
-![human](../assets/media/human_walk.gif)
-
-If you don't want/need to load a complete rig, but just one arm, that is also possible. This can be done by making an entity and adding the arm component to it. To add more segments, you can call a function on the component. Below you can see what this looks like in code;
-
-```cpp
-auto arm = bee::Engine.ECS().CreateEntity();
-auto& arm_comp = Engine.ECS().CreateComponent<ArmInverse>(arm);
-
-arm_comp.AddSegment(1.0f, 0.07f, glm::pi<float>(), {0, 0, 1.0f}, "models/BoxAndCylinder.gltf");
-```
-
-<div style="text-align: center;">
-  <a href="#top">go back to top</a>
-</div>

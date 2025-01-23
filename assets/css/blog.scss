@@ -2,11 +2,12 @@
 ---
 
 $header-heading-color: #000;
-$header-bg-color: #293187;
-$header-bg-color-secondary: #72a770;
+$header-bg-color: {{ page.header_bg_color }};
+$header-bg-color-secondary: {{ page.header_bg_color_secondary }};
 $section-headings-color: #000;
 $header-link-color: #ffffff;
 
+//animation with help of Claude.ai
 @keyframes animate-gradient {
   0%, 100% {
     background-position: 0% 50%;
@@ -17,9 +18,18 @@ $header-link-color: #ffffff;
 }
 
 header {
+  position: sticky;
+  top: -300px;
+  z-index: 1000;
+  width: 100%;
   background: linear-gradient(45deg, $header-bg-color, $header-bg-color-secondary);
   background-size: 200% 200%;
   animation: animate-gradient 15s ease infinite;
+}
+
+.main-content {
+  margin-top: -50px;
+  padding-top: 50px;
 }
 
 @import "{{ site.theme }}";
@@ -28,9 +38,9 @@ header {
   position: absolute;
   top: 0;
   left: 0;
-  padding: 10px; // Optional: for some spacing
-  font-size: 20px; // Adjust as needed
-  z-index: 1000; // Ensures it's above other items
+  padding: 10px;
+  font-size: 20px;
+  z-index: 1000;
 }
 .site-name a {
   text-decoration: none;

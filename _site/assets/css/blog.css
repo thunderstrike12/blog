@@ -1,7 +1,9 @@
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap");
 @keyframes animate-gradient { 0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; } }
-header { background: linear-gradient(45deg, #293187, #72a770); background-size: 200% 200%; animation: animate-gradient 15s ease infinite; }
+header { position: sticky; top: -300px; z-index: 1000; width: 100%; background: linear-gradient(45deg, #23074d, #cc5333); background-size: 200% 200%; animation: animate-gradient 15s ease infinite; }
+
+.main-content { margin-top: -50px; padding-top: 50px; }
 
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */
 /** 1. Set default font family to sans-serif. 2. Prevent iOS text size adjust after orientation change, without disabling user zoom. */
@@ -273,7 +275,7 @@ a:hover { text-decoration: underline; }
 @media screen and (max-width: 42em) { .btn { display: block; width: 100%; padding: 0.75rem; font-size: 0.9rem; }
   .btn + .btn { margin-top: 1rem; margin-left: 0; } }
 
-.page-header { color: #000; text-align: center; background-color: #293187; background-image: linear-gradient(120deg, #72a770, #293187); }
+.page-header { color: #000; text-align: center; background-color: #23074d; background-image: linear-gradient(120deg, #cc5333, #23074d); }
 @media screen and (min-width: 64em) { .page-header { padding: 5rem 6rem; } }
 @media screen and (min-width: 42em) and (max-width: 64em) { .page-header { padding: 3rem 4rem; } }
 @media screen and (max-width: 42em) { .page-header { padding: 2rem 1rem; } }
