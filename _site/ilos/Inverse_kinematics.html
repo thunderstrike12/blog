@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#FFA500">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="/assets/css/style.css?v=b684136464bd82795e25e400c8dbafd6ca28cb1e">
+    <link rel="stylesheet" href="/assets/css/style.css?v=8f39c380a319c394a31274ae056a342fa001b11b">
     <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
 
 <!-- Setup Google Analytics -->
@@ -43,6 +43,16 @@
       <h3 id="introduction">Introduction</h3>
 
 <p>In this post about Inverse Kinematics I will demonstrate how I’ve made my Inverse Kinematics. An important heads up is that I am using an ECS and the algorithm I used for my Inverse Kinematics is the FABRIK algorithm.</p>
+
+<div style="text-align: center;">
+  <a href="#forward-kinematics">forward kinematics</a> 
+<br />
+  <a href="#inverse-kinematics">inverse kinematics</a>  
+<br />
+  <a href="#loading-rigs-from-blender">loading rigs</a>  
+<br />
+  <a href="#usability-of-library">usability</a>
+</div>
 
 <h3 id="forward-kinematics">Forward kinematics</h3>
 
@@ -179,6 +189,10 @@
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div></div>
+
+<p>This is what all that together can make;</p>
+
+<p><img src="../assets/media/long_arm.gif" alt="ik in action" /></p>
 
 <h3 id="loading-rigs-from-blender">Loading rigs from Blender</h3>
 
@@ -400,6 +414,10 @@
 
 <span class="n">arm_comp</span><span class="p">.</span><span class="n">AddSegment</span><span class="p">(</span><span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.07</span><span class="n">f</span><span class="p">,</span> <span class="n">glm</span><span class="o">::</span><span class="n">pi</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">(),</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">},</span> <span class="s">"models/BoxAndCylinder.gltf"</span><span class="p">);</span>
 </code></pre></div></div>
+
+<div style="text-align: center;">
+  <a href="#top">go back to top</a>
+</div>
 
 
       <footer class="site-footer">

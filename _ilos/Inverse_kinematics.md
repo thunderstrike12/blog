@@ -8,6 +8,16 @@ layout: default
 
 In this post about Inverse Kinematics I will demonstrate how I've made my Inverse Kinematics. An important heads up is that I am using an ECS and the algorithm I used for my Inverse Kinematics is the FABRIK algorithm.
 
+<div style="text-align: center;">
+  <a href="#forward-kinematics">forward kinematics</a> 
+<br>
+  <a href="#inverse-kinematics">inverse kinematics</a>  
+<br>
+  <a href="#loading-rigs-from-blender">loading rigs</a>  
+<br>
+  <a href="#usability-of-library">usability</a>
+</div>
+
 ### Forward kinematics
 
 Before we get into the actual Inverse Kinematics we will first take a look at some 2D forward kinematcs. The algorithm for forward kinematics is quite simple. All I do is give one segment an angle to rotate with and all following segments will rotate with the same angle. After this we move every segment to the end of the previous segment. In code That looks something like this:
@@ -148,6 +158,10 @@ void ArmInverse::AddSegment(float length, float width, float max_angle, glm::vec
     }
 }
 ```
+
+This is what all that together can make;
+
+![ik in action](../assets/media/long_arm.gif)
 
 ### Loading rigs from Blender
 
@@ -375,3 +389,7 @@ auto& arm_comp = Engine.ECS().CreateComponent<ArmInverse>(arm);
 
 arm_comp.AddSegment(1.0f, 0.07f, glm::pi<float>(), {0, 0, 1.0f}, "models/BoxAndCylinder.gltf");
 ```
+
+<div style="text-align: center;">
+  <a href="#top">go back to top</a>
+</div>
